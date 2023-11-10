@@ -18,6 +18,7 @@ namespace BusinessObject
         public int Freight { get; set; }
         [ForeignKey("User")]
         public User Member { get; set; }
+        public IList<OrderDetail> OrderDetails { get; set; }
 
     }
 }

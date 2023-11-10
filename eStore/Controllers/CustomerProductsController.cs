@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObject;
+using AutoMapper.Execution;
+using eStore.Helpers;
 
 namespace eStore.Controllers
 {
@@ -23,6 +25,47 @@ namespace eStore.Controllers
         {
             var estoreContext = _context.Products.Include(p => p.Category);
             return View(await estoreContext.ToListAsync());
+        }
+
+        // POST: CustomerProducts/
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(int ProductId, int Quantity)
+        {
+            Order savedCart = SessionHelper.GetObjectFromJson<Order>(HttpContext.Session, "cart"); 
+
+            savedCart ??= new Order
+            {
+                MemberId = 1,
+                OrderDate = DateTime.Now,
+                RequiredDate = DateTime.Now,
+                ShippedDate = DateTime.Now,
+                Freight = 1,
+                OrderDetails = new List<OrderDetail>()
+            };
+
+            var product = _context.Products.Find(ProductId);
+            var cartProduct = savedCart.OrderDetails.FirstOrDefault(x => x.ProductId == ProductId);
+            if (cartProduct != null)
+            {
+                cartProduct.Quantity += Quantity;
+            } 
+            else
+            {
+                savedCart.OrderDetails.Add(new OrderDetail
+                {
+                    Discount = 0,
+                    ProductId = ProductId,
+                    Quantity = Quantity,
+                    UnitPrice = product.UnitPrice,
+                });
+            }
+            
+
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", savedCart);
+            return RedirectToAction();
         }
 
         // GET: CustomerProducts/Details/5
@@ -51,16 +94,7 @@ namespace eStore.Controllers
             return View();
         }
 
-        // POST: CustomerProducts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int ProductId, int Quantity)
-        {
-            
-            return View();
-        }
+        
 
         // GET: CustomerProducts/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -148,14 +182,14 @@ namespace eStore.Controllers
             {
                 _context.Products.Remove(product);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-          return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
+            return (_context.Products?.Any(e => e.ProductId == id)).GetValueOrDefault();
         }
     }
 }

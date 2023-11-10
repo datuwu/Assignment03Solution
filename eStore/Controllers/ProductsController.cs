@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObject;
+using Microsoft.AspNetCore.Authorization;
 
 namespace eStore.Controllers
 {
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly EstoreContext _context;
@@ -21,6 +23,7 @@ namespace eStore.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
+            var user = this.User;
             var estoreContext = _context.Products.Include(p => p.Category);
             return View(await estoreContext.ToListAsync());
         }

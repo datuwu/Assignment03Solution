@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObject;
+using eStore.Helpers;
 
 namespace eStore.Controllers
 {
@@ -44,6 +45,17 @@ namespace eStore.Controllers
             return View(order);
         }
 
+        public async Task<IActionResult> Cart()
+        {
+
+            var order = SessionHelper.GetObjectFromJson<Order>(HttpContext.Session, "cart");
+            if (order == null)
+            {
+                return Redirect("/CustomerProducts/Index");
+            }
+
+            return View(order);
+        }
         // GET: CustomerOrders/Create
         public IActionResult Create()
         {
