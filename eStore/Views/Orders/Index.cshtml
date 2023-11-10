@@ -4,56 +4,76 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="container-fluid">
+    <h2>Order List</h2>
+    <table class="table table-sm table-striped table-bordered m-2">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Member ID</th>
+                <th>Order Date</th>
+                <th>Required Date</th>
+                <th>Shipped Date</th>
+                <th>Freight</th>
+                <th>Update</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.MemberId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RequiredDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ShippedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Freight)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.MemberId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RequiredDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ShippedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Freight)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.OrderId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.OrderId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.OrderId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        ShowAllOrders();
+
+        function ShowAllOrders() {
+            $("table tbody").html("");
+            $.ajax({
+                url: "https://localhost:7128/odata/Orders",
+                type: "get",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (result, status, xhr) {
+                    $.each(result.value, function (index, value) {
+                        var appendElement = $("<tr>");
+                        appendElement.append($("<td>").html(value.OrderId));
+                        appendElement.append($("<td>").html(value.MemberId));
+                        appendElement.append($("<td>").html(value.OrderDate));
+                        appendElement.append($("<td>").html(value.RequiredDate));
+                        appendElement.append($("<td>").html(value.ShippedDate));
+                        appendElement.append($("<td>").html(value.Freight));
+                        appendElement.append($("<td>").html("<a href=\"?id=" +
+                            value.ProductId + "\">Update</a>"));
+                        appendElement.append($("<td>").html("<a class=\"delete\" href=\"#\">Delete</a>"));
+                        $("table tbody").append(appendElement);
+                    });
+                    console.log(result);
+                },
+
+                error: function (xhr, status, error) {
+                    console.log(xhr);
+                }
+            });
+        }
+
+        $("table").on("click", "a.delete", function (e) {
+            e.preventDefault();
+            var orderId = $(this).closest("tr").find("td:nth-child(1)").text();
+
+            $.ajax({
+                url: "https://localhost:7128/odata/Orders/" + orderId,
+                type: "delete",
+                contentType: "application/json",
+                success: function (result, status, xhr) {
+                    ShowAllOrders();
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr);
+                }
+            });
+        });
+    });
+</script>

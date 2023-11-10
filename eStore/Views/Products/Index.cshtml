@@ -10,6 +10,7 @@
         <thead>
             <tr>
                 <th>Product ID</th>
+                <th>Category</th>
                 <th>Product Name</th>
                 <th>Weight</th>
                 <th>Unit Price</th>
@@ -25,7 +26,7 @@
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 <script type="text/javascript">
-    $(document).ready(function () { // Corrected the syntax here
+    $(document).ready(function () {
         ShowAllProducts();
 
         function ShowAllProducts() {
@@ -36,29 +37,30 @@
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
                 success: function (result, status, xhr) {
-                    $.each(result, function (index, value) {
-                        var appendElement = $("<tr>"); 
-                        appendElement.append($("<td>").html(value["productId"]));
-//                        appendElement.append($("<td>").html(value["Category"]));
-                        appendElement.append($("<td>").html(value["productName"])); 
-                        appendElement.append($("<td>").html(value["weight"]));
-                        appendElement.append($("<td>").html(value["unitPrice"]));
-                        appendElement.append($("<td>").html(value["unitsInStock"]));
-//                        appendElement.append($("<td>").html(value["update"])); 
+                    $.each(result.value, function (index, value) {
+                        var appendElement = $("<tr>");
+                        appendElement.append($("<td>").html(value.ProductId));
+                        appendElement.append($("<td>").html(value.CategoryId));
+                        appendElement.append($("<td>").html(value.ProductName));
+                        appendElement.append($("<td>").html(value.Weight));
+                        appendElement.append($("<td>").html(value.UnitPrice));
+                        appendElement.append($("<td>").html(value.UnitsInStock));
                         appendElement.append($("<td>").html("<a href=\"?id=" +
-                            value["productId"] + "\"><img src=\"icon/edit.png\" /></a>"));
-                        appendElement.append($("<td>").html("<img class=\"delete\" src=\"icon/close.png\" />"));
-//                        $("table tbody").append(appendElement);
+                            value.ProductId + "\">Update</a>"));
+                        appendElement.append($("<td>").html("<a class=\"delete\" href=\"#\">Delete</a>"));
+                        $("table tbody").append(appendElement);
                     });
                     console.log(result);
                 },
+
                 error: function (xhr, status, error) {
                     console.log(xhr);
                 }
             });
         }
 
-        $("table").on("click", "img.delete", function () {
+        $("table").on("click", "a.delete", function (e) {
+            e.preventDefault();
             var productId = $(this).closest("tr").find("td:nth-child(1)").text();
 
             $.ajax({
@@ -68,7 +70,7 @@
                 success: function (result, status, xhr) {
                     ShowAllProducts();
                 },
-                error: function (xhr, status, error) { 
+                error: function (xhr, status, error) {
                     console.log(xhr);
                 }
             });
