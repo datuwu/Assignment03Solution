@@ -16,6 +16,12 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
+// Register UserManager<User>
+builder.Services.AddScoped<UserManager<User>>();
+
+// Register CustomSignInManager
+builder.Services.AddScoped<SignInManager<User>, CustomSignInManager>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
