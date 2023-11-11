@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -16,8 +17,8 @@ namespace BusinessObject
         {
         }
 
-        public EstoreContext(DbContextOptions<EstoreContext> options) : base(options) 
-        { 
+        public EstoreContext(DbContextOptions<EstoreContext> options) : base(options)
+        {
         }
 
         public virtual DbSet<Product> Products { get; set; }
@@ -38,12 +39,37 @@ namespace BusinessObject
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = "20c53d46-47bd-4942-bae3-e5440e12d4e2",
+                    UserName = "user1@example.com",
+                    NormalizedUserName = "USER1@EXAMPLE.COM",
+                    Email = "user1@example.com",
+                    NormalizedEmail = "USER1@EXAMPLE.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = new PasswordHasher<User>().HashPassword(null, "Pa$$w0rd"),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                },
+                new User
+                {
+                    Id = "5c4973e1-02f1-403f-bb4e-459d5f6ff1b1",
+                    UserName = "user2@example.com",
+                    NormalizedUserName = "USER2@EXAMPLE.COM",
+                    Email = "user2@example.com",
+                    NormalizedEmail = "USER2@EXAMPLE.COM",
+                    EmailConfirmed = true,
+                    PasswordHash = new PasswordHasher<User>().HashPassword(null, "Pa$$w0rd"),
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                }
+            );
+
             modelBuilder.Entity<Order>().HasData(
-                new Order { OrderId = 1, MemberId = 1, OrderDate = new DateTime(2021, 1, 1), RequiredDate = new DateTime(2021, 2, 1), ShippedDate = new DateTime(2021, 3, 1), Freight = 100 },
-                new Order { OrderId = 2, MemberId = 2, OrderDate = new DateTime(2021, 2, 1), RequiredDate = new DateTime(2021, 3, 1), ShippedDate = new DateTime(2021, 4, 1), Freight = 200 },
-                new Order { OrderId = 3, MemberId = 3, OrderDate = new DateTime(2021, 3, 1), RequiredDate = new DateTime(2021, 4, 1), ShippedDate = new DateTime(2021, 5, 1), Freight = 300 },
-                new Order { OrderId = 4, MemberId = 4, OrderDate = new DateTime(2021, 4, 1), RequiredDate = new DateTime(2021, 5, 1), ShippedDate = new DateTime(2021, 6, 1), Freight = 400 },
-                new Order { OrderId = 5, MemberId = 5, OrderDate = new DateTime(2021, 5, 1), RequiredDate = new DateTime(2021, 6, 1), ShippedDate = new DateTime(2021, 7, 1), Freight = 500 }
+                new Order { OrderId = 1, MemberId = "20c53d46-47bd-4942-bae3-e5440e12d4e2", OrderDate = new DateTime(2021, 1, 1), RequiredDate = new DateTime(2021, 2, 1), ShippedDate = new DateTime(2021, 3, 1), Freight = 100 },
+                new Order { OrderId = 2, MemberId = "20c53d46-47bd-4942-bae3-e5440e12d4e2", OrderDate = new DateTime(2021, 2, 1), RequiredDate = new DateTime(2021, 3, 1), ShippedDate = new DateTime(2021, 4, 1), Freight = 200 },
+                new Order { OrderId = 3, MemberId = "5c4973e1-02f1-403f-bb4e-459d5f6ff1b1", OrderDate = new DateTime(2021, 3, 1), RequiredDate = new DateTime(2021, 4, 1), ShippedDate = new DateTime(2021, 5, 1), Freight = 300 },
+                new Order { OrderId = 4, MemberId = "5c4973e1-02f1-403f-bb4e-459d5f6ff1b1", OrderDate = new DateTime(2021, 4, 1), RequiredDate = new DateTime(2021, 5, 1), ShippedDate = new DateTime(2021, 6, 1), Freight = 400 },
+                new Order { OrderId = 5, MemberId = "20c53d46-47bd-4942-bae3-e5440e12d4e2", OrderDate = new DateTime(2021, 5, 1), RequiredDate = new DateTime(2021, 6, 1), ShippedDate = new DateTime(2021, 7, 1), Freight = 500 }
             );
 
             modelBuilder.Entity<OrderDetail>().HasData(
@@ -63,7 +89,7 @@ namespace BusinessObject
             );
 
             modelBuilder.Entity<Category>().HasData(
-                new Category { CategoryId = 1, CategoryName = "Valentine"},
+                new Category { CategoryId = 1, CategoryName = "Valentine" },
                 new Category { CategoryId = 2, CategoryName = "Study" },
                 new Category { CategoryId = 3, CategoryName = "Toy" },
                 new Category { CategoryId = 4, CategoryName = "Food" },

@@ -1,6 +1,7 @@
 using BusinessObject;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,8 +11,8 @@ builder.Services.AddDbContext<EstoreContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<EstoreContext>();
+builder.Services.AddDefaultIdentity<User>()
+    .AddEntityFrameworkStores<EstoreContext>().AddDefaultTokenProviders();
 builder.Services.AddSession();
 builder.Services.AddHttpContextAccessor();
 
@@ -19,10 +20,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
 // Register UserManager<User>
-builder.Services.AddScoped<UserManager<User>>();
+//builder.Services.AddScoped<UserManager<User>>();
 
 // Register CustomSignInManager
-builder.Services.AddScoped<SignInManager<User>, CustomSignInManager>();
+// builder.Services.AddScoped<SignInManager<User>, CustomSignInManager>();
 
 var app = builder.Build();
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObject.Migrations
 {
     [DbContext(typeof(EstoreContext))]
-    [Migration("20231107050000_initDB")]
+    [Migration("20231111021106_initDB")]
     partial class initDB
     {
         /// <inheritdoc />
@@ -80,8 +80,9 @@ namespace BusinessObject.Migrations
                     b.Property<int>("Freight")
                         .HasColumnType("int");
 
-                    b.Property<int>("MemberId")
-                        .HasColumnType("int");
+                    b.Property<string>("MemberId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
@@ -92,12 +93,9 @@ namespace BusinessObject.Migrations
                     b.Property<DateTime>("ShippedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("User")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("OrderId");
 
-                    b.HasIndex("User");
+                    b.HasIndex("MemberId");
 
                     b.ToTable("Orders");
 
@@ -106,7 +104,7 @@ namespace BusinessObject.Migrations
                         {
                             OrderId = 1,
                             Freight = 100,
-                            MemberId = 1,
+                            MemberId = "20c53d46-47bd-4942-bae3-e5440e12d4e2",
                             OrderDate = new DateTime(2021, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RequiredDate = new DateTime(2021, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ShippedDate = new DateTime(2021, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -115,7 +113,7 @@ namespace BusinessObject.Migrations
                         {
                             OrderId = 2,
                             Freight = 200,
-                            MemberId = 2,
+                            MemberId = "20c53d46-47bd-4942-bae3-e5440e12d4e2",
                             OrderDate = new DateTime(2021, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RequiredDate = new DateTime(2021, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ShippedDate = new DateTime(2021, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -124,7 +122,7 @@ namespace BusinessObject.Migrations
                         {
                             OrderId = 3,
                             Freight = 300,
-                            MemberId = 3,
+                            MemberId = "5c4973e1-02f1-403f-bb4e-459d5f6ff1b1",
                             OrderDate = new DateTime(2021, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RequiredDate = new DateTime(2021, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ShippedDate = new DateTime(2021, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -133,7 +131,7 @@ namespace BusinessObject.Migrations
                         {
                             OrderId = 4,
                             Freight = 400,
-                            MemberId = 4,
+                            MemberId = "5c4973e1-02f1-403f-bb4e-459d5f6ff1b1",
                             OrderDate = new DateTime(2021, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RequiredDate = new DateTime(2021, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ShippedDate = new DateTime(2021, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -142,7 +140,7 @@ namespace BusinessObject.Migrations
                         {
                             OrderId = 5,
                             Freight = 500,
-                            MemberId = 5,
+                            MemberId = "20c53d46-47bd-4942-bae3-e5440e12d4e2",
                             OrderDate = new DateTime(2021, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             RequiredDate = new DateTime(2021, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ShippedDate = new DateTime(2021, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -362,6 +360,40 @@ namespace BusinessObject.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "20c53d46-47bd-4942-bae3-e5440e12d4e2",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "09e689a8-5e8d-4ecd-9efd-0a034694e0f2",
+                            Email = "user1@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "USER1@EXAMPLE.COM",
+                            NormalizedUserName = "USER1@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAELs94lXCwj0I9eDpbIW9i8jwvImZRD1t366mpSMSkmETudrpnsr1Gbxcn/6bhd+90w==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "56d38dea-aee3-4278-99a5-01dd7355638e",
+                            TwoFactorEnabled = false,
+                            UserName = "user1@example.com"
+                        },
+                        new
+                        {
+                            Id = "5c4973e1-02f1-403f-bb4e-459d5f6ff1b1",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "388acc44-588a-4421-ab3d-26e0c525c007",
+                            Email = "user2@example.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "USER2@EXAMPLE.COM",
+                            NormalizedUserName = "USER2@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAvUnaGhA1AsHpEspQ0LggGyvVOFXVW7H3QSSg5nfudQ5enQcay8ZSF/fLtsd5N9Ew==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "14a3b69a-27e2-4641-9546-1fb6d360637c",
+                            TwoFactorEnabled = false,
+                            UserName = "user2@example.com"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -444,12 +476,10 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -486,12 +516,10 @@ namespace BusinessObject.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -505,7 +533,9 @@ namespace BusinessObject.Migrations
                 {
                     b.HasOne("BusinessObject.User", "Member")
                         .WithMany("Orders")
-                        .HasForeignKey("User");
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Member");
                 });
@@ -513,7 +543,7 @@ namespace BusinessObject.Migrations
             modelBuilder.Entity("BusinessObject.OrderDetail", b =>
                 {
                     b.HasOne("BusinessObject.Order", "Order")
-                        .WithMany()
+                        .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -589,6 +619,11 @@ namespace BusinessObject.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BusinessObject.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 
             modelBuilder.Entity("BusinessObject.User", b =>

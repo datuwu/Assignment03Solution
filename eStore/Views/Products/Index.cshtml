@@ -45,9 +45,10 @@
                         appendElement.append($("<td>").html(value.Weight));
                         appendElement.append($("<td>").html(value.UnitPrice));
                         appendElement.append($("<td>").html(value.UnitsInStock));
-                        appendElement.append($("<td>").html("<a href=\"?id=" +
+                        appendElement.append($("<td>").html("<a href=\"products/edit/" +
                             value.ProductId + "\">Update</a>"));
-                        appendElement.append($("<td>").html("<a class=\"delete\" href=\"#\">Delete</a>"));
+                        appendElement.append($("<td>").html("<a class=\"products/delete\" href=\"delete/" +
+                            value.ProductId + "\">Delete</a>"));
                         $("table tbody").append(appendElement);
                     });
                     console.log(result);

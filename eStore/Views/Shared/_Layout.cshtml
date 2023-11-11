@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using eStore.Helpers;
+@inject IHttpContextAccessor Accessor
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -22,21 +24,29 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="CustomerProducts" asp-action="Index">Products (Customer)</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products (Admin)</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="Index">Order (Admin)</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="CustomerOrders" asp-action="Cart">Cart (Customer)</a>
-                        </li>
+                        @{
+                            if (Accessor.HttpContext.Session.GetString("role") == "customer")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="CustomerProducts" asp-action="Index">Products (Customer)</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="CustomerOrders" asp-action="Cart">Cart (Customer)</a>
+                                </li>
+                            }
+                        }
+                        @{
+                            if (Accessor.HttpContext.Session.GetString("role") == "admin")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Products" asp-action="Index">Products (Admin)</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="Index">Order (Admin)</a>
+                                </li>
+                            }
+                        }
+
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

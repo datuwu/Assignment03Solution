@@ -128,23 +128,19 @@ namespace eStore.Controllers
             }
             return View(order);
         }
-
+        
         // GET: CustomerOrders/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? orderId, int? productId)
         {
-            if (id == null || _context.Orders == null)
-            {
-                return NotFound();
-            }
-
-            var order = await _context.Orders
-                .FirstOrDefaultAsync(m => m.OrderId == id);
+            var order = SessionHelper.GetObjectFromJson<Order>(HttpContext.Session, "cart");
             if (order == null)
             {
-                return NotFound();
+                return Redirect("/CustomerProducts/Index");
             }
 
-            return View(order);
+            order.OrderDetails.Remove(order.OrderDetails.FirstOrDefault(o => o.ProductId == productId));
+            SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", order);
+            return Redirect("/CustomerOrders/Cart");
         }
 
         // POST: CustomerOrders/Delete/5

@@ -34,11 +34,12 @@ namespace eStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(int ProductId, int Quantity)
         {
-            Order savedCart = SessionHelper.GetObjectFromJson<Order>(HttpContext.Session, "cart"); 
+            Order savedCart = SessionHelper.GetObjectFromJson<Order>(HttpContext.Session, "cart");
+            var loginUser = HttpContext.Session.GetString("userId");
 
             savedCart ??= new Order
             {
-                MemberId = 1,
+                MemberId = loginUser,
                 OrderDate = DateTime.Now,
                 RequiredDate = DateTime.Now,
                 ShippedDate = DateTime.Now,
@@ -48,21 +49,24 @@ namespace eStore.Controllers
 
             var product = _context.Products.Find(ProductId);
             var cartProduct = savedCart.OrderDetails.FirstOrDefault(x => x.ProductId == ProductId);
-            if (cartProduct != null)
+            if (Quantity > 0)
             {
-                cartProduct.Quantity += Quantity;
-            } 
-            else
-            {
-                savedCart.OrderDetails.Add(new OrderDetail
+                if (cartProduct != null)
                 {
-                    Discount = 0,
-                    ProductId = ProductId,
-                    Quantity = Quantity,
-                    UnitPrice = product.UnitPrice,
-                });
+                    cartProduct.Quantity += Quantity;
+                }
+                else
+                {
+                    savedCart.OrderDetails.Add(new OrderDetail
+                    {
+                        Discount = 0,
+                        ProductId = ProductId,
+                        Product = product,
+                        Quantity = Quantity,
+                        UnitPrice = product.UnitPrice,
+                    });
+                }
             }
-            
 
             SessionHelper.SetObjectAsJson(HttpContext.Session, "cart", savedCart);
             return RedirectToAction();

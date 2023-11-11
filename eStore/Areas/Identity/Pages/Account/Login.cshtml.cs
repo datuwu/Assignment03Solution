@@ -15,18 +15,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using BusinessObject;
+using eStore.Helpers;
+using System.Data;
+using Microsoft.AspNetCore.Http;
 
 namespace eStore.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
         private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<User> signInManager, ILogger<LoginModel> logger, UserManager<User> userManager)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -110,11 +115,22 @@ namespace eStore.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
+
+                var isAdmin = (Input.Email == GetAdminUsername() && Input.Password == GetAdminPassword());
+
+                if (isAdmin)
+                {
+                    HttpContext.Session.SetString("role", "admin");
+                    return RedirectToAction("Index", "Products");
+                }
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    HttpContext.Session.SetString("userId", user.Id);
+                    HttpContext.Session.SetString("role", "customer");
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
@@ -136,6 +152,24 @@ namespace eStore.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        private string GetAdminUsername()
+        {
+            IConfiguration config = new ConfigurationBuilder()
+                  .SetBasePath(Directory.GetCurrentDirectory())
+                  .AddJsonFile("appsettings.json", true, true)
+                  .Build();
+            return config["adminAccount:username"];
+        }
+
+        private string GetAdminPassword()
+        {
+            IConfiguration config = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json", true, true)
+                    .Build();
+            return config["adminAccount:password"];
         }
     }
 }

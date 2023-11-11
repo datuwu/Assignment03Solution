@@ -42,7 +42,56 @@
         </dd>
     </dl>
 </div>
+<h1>Cart items</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                UnitPrice
+            </th>
+            <th>
+                Quantity
+            </th>
+            <th>
+                Discount
+            </th>
+            <th>
+                Order
+            </th>
+            <th>
+                Product
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.OrderDetails)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UnitPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Discount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Order.OrderId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Product.ProductName)
+                </td>
+                <td>
+
+                    @Html.ActionLink("Delete", "Delete", new { orderId=item.OrderId, productId = item.ProductId  })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.OrderId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

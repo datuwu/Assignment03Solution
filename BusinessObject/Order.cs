@@ -10,13 +10,12 @@ namespace BusinessObject
     public class Order
     {
         public int OrderId { get; set; }
-        [ForeignKey("User")]
-        public int MemberId { get; set; }
+        public string MemberId { get; set; }
         public  DateTime OrderDate { get; set; }
         public DateTime RequiredDate { get; set; }
         public DateTime ShippedDate { get; set; }
         public int Freight { get; set; }
-        [ForeignKey("User")]
+        [ForeignKey("MemberId")]
         public User Member { get; set; }
         public IList<OrderDetail> OrderDetails { get; set; }
 
