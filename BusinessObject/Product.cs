@@ -15,6 +15,6 @@ namespace BusinessObject
         public int Weight { get; set; }
         public int UnitPrice { get; set; }
         public int UnitsInStock { get; set; }
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
     }
 }

@@ -7,28 +7,36 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObject;
 using eStore.Helpers;
+using System.Text;
+using System.Text.Json;
+using System.Net;
 
 namespace eStore.Controllers
 {
     public class CustomerOrdersController : Controller
     {
         private readonly EstoreContext _context;
+        private readonly string OrderApiUrl = "";
+        private readonly HttpClient client = null;
 
         public CustomerOrdersController(EstoreContext context)
         {
+            client = new HttpClient();
             _context = context;
+            OrderApiUrl = "https://localhost:7128/api/Orders";
         }
 
         // GET: CustomerOrders
         public async Task<IActionResult> Index()
         {
-              return _context.Orders != null ? 
-                          View(await _context.Orders.ToListAsync()) :
-                          Problem("Entity set 'EstoreContext.Orders'  is null.");
+            return _context.Orders != null ?
+                        View(await _context.Orders
+              .Include(o => o.Member).ToListAsync()) :
+                        Problem("Entity set 'EstoreContext.Orders'  is null.");
         }
 
         // GET: CustomerOrders/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Detail(int? id)
         {
             if (id == null || _context.Orders == null)
             {
@@ -36,6 +44,9 @@ namespace eStore.Controllers
             }
 
             var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                .ThenInclude(o => o.Product)
+                .Include(o => o.Member)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
@@ -55,6 +66,28 @@ namespace eStore.Controllers
             }
 
             return View(order);
+        }
+
+        public async Task<IActionResult> Order()
+        {
+            var order = SessionHelper.GetObjectFromJson<Order>(HttpContext.Session, "cart");
+            foreach (var orderDetail in order.OrderDetails)
+            {
+                orderDetail.Product = null;
+            }
+            using StringContent jsonContent = new(
+                        JsonSerializer.Serialize(order),
+                        Encoding.UTF8,
+                        "application/json");
+            string json = await jsonContent.ReadAsStringAsync();
+            HttpResponseMessage response = await client.PostAsync($"{OrderApiUrl}", jsonContent);
+
+            if (response.StatusCode.Equals(HttpStatusCode.Created))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction("Cart");
         }
         // GET: CustomerOrders/Create
         public IActionResult Create()
@@ -128,7 +161,7 @@ namespace eStore.Controllers
             }
             return View(order);
         }
-        
+
         // GET: CustomerOrders/Delete/5
         public async Task<IActionResult> Delete(int? orderId, int? productId)
         {
@@ -157,14 +190,14 @@ namespace eStore.Controllers
             {
                 _context.Orders.Remove(order);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool OrderExists(int id)
         {
-          return (_context.Orders?.Any(e => e.OrderId == id)).GetValueOrDefault();
+            return (_context.Orders?.Any(e => e.OrderId == id)).GetValueOrDefault();
         }
     }
 }

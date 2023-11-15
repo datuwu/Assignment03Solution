@@ -16,8 +16,8 @@ namespace BusinessObject
         public DateTime ShippedDate { get; set; }
         public int Freight { get; set; }
         [ForeignKey("MemberId")]
-        public User Member { get; set; }
-        public IList<OrderDetail> OrderDetails { get; set; }
+        public User? Member { get; set; }
+        public IList<OrderDetail>? OrderDetails { get; set; }
 
     }
 }
